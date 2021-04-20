@@ -4,30 +4,49 @@
       <div class="close"><span class="iconfont iconicon-test"></span></div>
       <div class="logo"><span class="iconfont iconnew"></span></div>
       <div class="inputs">
-        <input placeholder="请输入手机号" class="input" /><input
-          placeholder="密码"
-          class="input"
+        <my_input
+          type="text"
+          placeholder="请输入账户名..."
+          v-model="user.username"
+          :rules="/^1[35789]\d{9}$/"
+          msg="请输入11位手机号"
+        ></my_input>
+        <my_input
+          msg="请输入3~16位的密码"
           type="password"
-        />
+          placeholder="请输入密码"
+          v-model="user.password"
+          :rules="/^.{3,16}$/"
+        ></my_input>
       </div>
       <p class="tips">
         没有账号？
         <a href="#/register" class="">去注册</a>
       </p>
-      <my_button @click="login" type="success"> 登录 </my_button>
+      <my_button @click="login" type="success">登录</my_button>
     </div>
   </div>
 </template>
 
 <script>
 import my_button from "@/components/my_button";
+import my_input from "@/components/my_input";
 export default {
+  data() {
+    return {
+      user: {
+        username: "",
+        password: "",
+      },
+    };
+  },
   components: {
     my_button,
+    my_input,
   },
   methods: {
-    login(e) {
-      alert("登录了");
+    login() {
+      alert("登陆了");
     },
   },
 };

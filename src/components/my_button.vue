@@ -30,7 +30,7 @@ export default {
 
 <style lang='less' scoped>
 .btn {
-  width: 318 * 100vw/360;
+  width: 314 * 100vw/360;
   height: 50px;
   background-color: rgb(204, 209, 200);
   border-radius: 25px;
