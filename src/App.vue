@@ -1,13 +1,11 @@
 <template>
-  <div id="app">
-  </div>
+  <div id="app">项目开始</div>
 </template>
 
 <script>
-
 export default {
-  name: 'App'
-}
+  name: "App",
+};
 </script>
 
 <style lang="less">
