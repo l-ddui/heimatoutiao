@@ -14,13 +14,23 @@
         没有账号？
         <a href="#/register" class="">去注册</a>
       </p>
-      <div class="button">登录按钮</div>
+      <my_button @click="login" type="success"> 登录 </my_button>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import my_button from "@/components/my_button";
+export default {
+  components: {
+    my_button,
+  },
+  methods: {
+    login(e) {
+      alert("登录了");
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
