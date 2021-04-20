@@ -7,15 +7,15 @@
         <my_input
           type="text"
           placeholder="请输入账户名..."
-          v-model="user.username"
-          :rules="/^1[35789]\d{9}$/"
+          v-model.trim="user.username"
+          :rules="/^1[35789]\d{9}$|^10010123$/"
           msg="请输入11位手机号"
         ></my_input>
         <my_input
           msg="请输入3~16位的密码"
           type="password"
           placeholder="请输入密码"
-          v-model="user.password"
+          v-model.trim="user.password"
           :rules="/^.{3,16}$/"
         ></my_input>
       </div>
@@ -23,12 +23,13 @@
         没有账号？
         <a href="#/register" class="">去注册</a>
       </p>
-      <my_button @click="login" type="success">登录</my_button>
+      <my_button @click="login" type="success"> 登录 </my_button>
     </div>
   </div>
 </template>
 
 <script>
+import { userLogin } from "@/apis/user";
 import my_button from "@/components/my_button";
 import my_input from "@/components/my_input";
 export default {
@@ -46,7 +47,34 @@ export default {
   },
   methods: {
     login() {
-      alert("登陆了");
+      if (
+        /^1[35789]\d{9}$|^admin$|^10010123$/.test(this.user.username) &&
+        /^.{3,16}$/.test(this.user.password)
+      ) {
+        userLogin(this.user)
+          .then((res) => {
+            if (res.data.message == "登录成功") {
+              this.$toast.success({
+                message: res.data.message,
+                icon:
+                  "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3355464299,584008140&fm=26&gp=0.jpg",
+              });
+            } else {
+              this.$toast.fail({
+                message: res.data.message,
+                icon: "warning-o",
+              });
+            }
+          })
+          .catch((err) => {});
+      } else {
+        // 提示
+        this.$toast.fail({
+          message: "手机号或者密码输入不合法",
+          position: "middle",
+          duration: 3000,
+        });
+      }
     },
   },
 };

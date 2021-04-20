@@ -30,6 +30,7 @@ export default {
   },
   methods: {
     handlerInput(e) {
+      // this.pn = "class";
       //   console.log(e.target.value);
       let value = e.target.value;
       //  判断是否传递了规则
@@ -44,14 +45,14 @@ export default {
       this.$emit("input", value);
     },
     handlerBlur(e) {
-      this.pn = "class";
-
       let value = e.target.value;
       //  判断是否传递了规则
       if (this.rules) {
+        this.pn = "class";
+
         // 判断是否满足规则
         if (!this.rules.test(value)) {
-          console.log(this.msg);
+          this.$toast.fail(this.msg);
         }
       }
     },

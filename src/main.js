@@ -7,6 +7,10 @@ import '@/styles/reset.less'
 // 引入路由模块
 import router from '@/router/index'
 
+// 引入 toast
+import { Toast } from 'vant';
+Vue.use(Toast);
+
 Vue.config.productionTip = false
 
 new Vue({
