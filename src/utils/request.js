@@ -1,5 +1,6 @@
 // 引入axios
 import axios from 'axios'
+import { Toast } from 'vant';
 // 添加默认配置
 axios.defaults.baseURL = 'http://157.122.54.189:9083'
 // 添加请求拦截器
@@ -8,6 +9,7 @@ axios.interceptors.request.use(function (config) {
     // console.log(config);
     let token = localStorage.getItem('heimatoutiaoToken')
     if (token) {
+        // 添加token
         config.headers.Authorization = token
     }
     return config;
@@ -15,6 +17,20 @@ axios.interceptors.request.use(function (config) {
     // 对请求错误做些什么
     return Promise.reject(error);
 });
+
+// 添加响应拦截器
+axios.interceptors.response.use(function (response) {
+    // console.log(response);
+    if (response.data.message == '用户信息验证失败！' || response.data.message == '用户信息验证失败') {
+        Toast.fail('用户信息验证失败')
+        window.location.href = '#login'
+    }
+    return response;
+}, function (error) {
+    // 对响应错误做点什么
+    return Promise.reject(error);
+});
+
 
 // 暴露
 export default axios

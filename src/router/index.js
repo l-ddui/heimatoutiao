@@ -28,8 +28,15 @@ const router = new VueRouter({
             path: '/personal/:id',
             component: () => import('@/views/user/personal.vue')
         },
+        {
+            name: 'edit_profile',
+            path: '/edit_profile/:id',
+            component: () => import('@/views/user/edit_profile.vue')
+        },
     ]
 })
+
+// 导航守卫
 router.beforeEach((to, from, next) => {
     if (to.path.indexOf('/personal/') != -1) {
         let token = localStorage.getItem('heimatoutiaoToken')

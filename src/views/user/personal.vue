@@ -1,6 +1,6 @@
 <template>
   <div class="personal">
-    <router-link to="/edit_profile">
+    <router-link :to="'/edit_profile/' + id">
       <div class="profile">
         <img :src="userinfo.head_img" alt />
         <div class="profile-center">
@@ -40,6 +40,7 @@ export default {
   data() {
     return {
       userinfo: {},
+      id: "",
     };
   },
   mounted() {
@@ -53,7 +54,8 @@ export default {
     2 将用户数据渲染到页面，借助第三方对象存储用户数据渲染时更加方便
      */
     // console.log(this.$route);
-    getUserDetail(this.$route.params.id)
+    this.id = this.$route.params.id;
+    getUserDetail(this.id)
       .then((res) => {
         if (res.data.message == "获取成功") {
           // console.log(res.data.data);

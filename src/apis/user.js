@@ -29,3 +29,12 @@ export const getUserDetail = (id) => {
         // headers: { Authorization: localStorage.getItem('heimatoutiaoToken') }
     })
 }
+
+// 更新用户信息
+export const updateeUserInfo = (id, data) => {
+    return axios({
+        method: 'post',
+        url: `/user_update/${id}`,
+        data
+    })
+}
