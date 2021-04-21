@@ -5,6 +5,7 @@
       success: type == 'success',
       primary: type == 'primary',
       danger: type == 'danger',
+      tuichu: type == 'tuichu',
     }"
     @click="handlerClick"
   >
@@ -39,6 +40,7 @@ export default {
   color: #fff;
   font-weight: bold;
   font-size: 20px;
+  margin: 0 auto;
 }
 .success {
   background-color: rgba(47, 177, 27, 0.822);
@@ -50,6 +52,10 @@ export default {
 }
 .primary {
   background-color: rgba(63, 105, 231, 0.863);
+  color: #fff;
+}
+.tuichu {
+  background-color: rgba(240, 160, 13, 0.89);
   color: #fff;
 }
 </style>

@@ -8,8 +8,8 @@ import '@/styles/reset.less'
 import router from '@/router/index'
 
 // 引入 toast
-import { Toast } from 'vant';
-Vue.use(Toast);
+import { Toast, Icon } from 'vant';
+Vue.use(Toast).use(Icon);
 
 Vue.config.productionTip = false
 
