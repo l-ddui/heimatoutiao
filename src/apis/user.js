@@ -24,7 +24,8 @@ export const getUserDetail = (id) => {
         method: 'get',
         // /user/:id 这种形式的参数只能用以下方式获取
         url: `/user/${id}`,
+        //  设置拦截器 统一处理：只要有token就带上
         //  设置请求头
-        headers: { Authorization: localStorage.getItem('heimatoutiaoToken') }
+        // headers: { Authorization: localStorage.getItem('heimatoutiaoToken') }
     })
 }

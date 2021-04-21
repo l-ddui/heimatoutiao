@@ -43,12 +43,20 @@ export default {
     };
   },
   mounted() {
+    /* 
+    页面一加载时就渲染数据
+    封装请求用户数据 api
+    1 传 id ，/user/:id 这种形式的参数只能用 url: `/user/${id}`方式获取
+    2 获取用户数据有身份验证，需要发起请求时在请求头 用 Authorization带上 token
+    在个人中心页面调用 api 发起请求
+    1 传入用户id，获取用户数据
+    2 将用户数据渲染到页面，借助第三方对象存储用户数据渲染时更加方便
+     */
     // console.log(this.$route);
     getUserDetail(this.$route.params.id)
       .then((res) => {
         if (res.data.message == "获取成功") {
-          console.log(res.data.data);
-
+          // console.log(res.data.data);
           this.userinfo = res.data.data;
           this.userinfo.head_img =
             axios.defaults.baseURL + this.userinfo.head_img;
