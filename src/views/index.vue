@@ -17,9 +17,9 @@
     <van-tabs v-model="active" sticky swipeable>
       <van-tab v-for="cate in cateList" :key="cate.id" :title="cate.name">
         <my_postBlock
-          v-for="post in postList"
+          v-for="post in cate.postlist"
           :key="post.id"
-          :article="post"
+          :post="post"
         ></my_postBlock>
       </van-tab>
     </van-tabs>
@@ -39,31 +39,42 @@ export default {
       // 当前激活的标题索引
       active: localStorage.getItem("heimatoutiaoToken") ? 1 : 0,
       cateList: [],
-      postList: [],
     };
   },
+
   async mounted() {
     //   获取栏目数据，存储到数组
     let res = await getCateList();
     this.cateList = res.data.data;
     // console.log(this.cateList);
+    //  数据改造
+    this.cateList = this.cateList.map((v) => {
+      return { ...v, postlist: [] };
+    });
+    // console.log(this.cateList);
 
-    // 获取当前选中标题项目的 id
-    let id = this.cateList[this.active].id;
-    //   console.log(id);
-    //   获取当前所选项对应的新闻数据
-    this.postList = (await getPostList(id)).data.data;
-    console.log(this.postList);
+    // 获取当前激活项的新闻数据
+    this.getpost();
+    // console.log(this.cateList);
+  },
+  methods: {
+    async getpost() {
+      // 获取当前选中标题项目的 id
+      let id = this.cateList[this.active].id;
+      //   console.log(id);
+      //  获取当前所选项对应的新闻数据存储到其对象的 postlist 数组中
+      this.cateList[this.active].postlist = (await getPostList(id)).data.data;
+      // console.log(this.postList);
+    },
   },
   //   监听 active 的变化
   watch: {
     async active() {
-      // 获取当前选中标题项目的 id
-      let id = this.cateList[this.active].id;
-      //   console.log(id);
-      //   获取当前所选项对应的新闻数据
-      this.postList = (await getPostList(id)).data.data;
-      //   console.log(this.postList);
+      // 当所选项的 postlist 有数据时，不再发送请求
+      if (this.cateList[this.active].postlist.length == 0) {
+        // 获取当前激活项的新闻数据
+        this.getpost();
+      }
     },
   },
 };
