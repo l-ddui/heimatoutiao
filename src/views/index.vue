@@ -15,45 +15,56 @@
     </div>
     <!-- Tab标签页 -->
     <van-tabs v-model="active" sticky swipeable>
-      <van-tab title="标签 1">
-        <div style="height: 1500px; background-color: red">内容 1</div>
+      <van-tab v-for="cate in cateList" :key="cate.id" :title="cate.name">
+        <my_postBlock
+          v-for="post in postList"
+          :key="post.id"
+          :article="post"
+        ></my_postBlock>
       </van-tab>
-      <van-tab title="标签 2">
-        <div style="height: 1500px; background-color: green">内容 2</div>
-      </van-tab>
-      <van-tab title="标签 3">
-        <div style="height: 1500px; background-color: skyblue">内容 3</div>
-      </van-tab>
-      <van-tab title="标签 4"
-        ><div style="height: 1500px; background-color: yellow">
-          内容 4
-        </div></van-tab
-      >
-      <van-tab title="标签 5"
-        ><div style="height: 1500px; background-color: green">
-          内容 5
-        </div></van-tab
-      >
-      <van-tab title="标签 6"
-        ><div style="height: 1500px; background-color: yellowgreen">
-          内容 6
-        </div></van-tab
-      >
-      <van-tab title="标签 7"
-        ><div style="height: 1500px; background-color: orange">
-          内容 7
-        </div></van-tab
-      >
     </van-tabs>
   </div>
 </template>
 
 <script>
+import { getCateList } from "@/apis/category";
+import my_postBlock from "@/components/my_postBlock";
+import { getPostList } from "../apis/post";
 export default {
+  components: {
+    my_postBlock,
+  },
   data() {
     return {
-      active: 0,
+      // 当前激活的标题索引
+      active: localStorage.getItem("heimatoutiaoToken") ? 1 : 0,
+      cateList: [],
+      postList: [],
     };
+  },
+  async mounted() {
+    //   获取栏目数据，存储到数组
+    let res = await getCateList();
+    this.cateList = res.data.data;
+    // console.log(this.cateList);
+
+    // 获取当前选中标题项目的 id
+    let id = this.cateList[this.active].id;
+    //   console.log(id);
+    //   获取当前所选项对应的新闻数据
+    this.postList = (await getPostList(id)).data.data;
+    console.log(this.postList);
+  },
+  //   监听 active 的变化
+  watch: {
+    async active() {
+      // 获取当前选中标题项目的 id
+      let id = this.cateList[this.active].id;
+      //   console.log(id);
+      //   获取当前所选项对应的新闻数据
+      this.postList = (await getPostList(id)).data.data;
+      //   console.log(this.postList);
+    },
   },
 };
 </script>
