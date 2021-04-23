@@ -26,8 +26,38 @@
     >
       <van-field v-model="nickname" required label="昵称" />
     </van-dialog>
-    <my_cell title="密码" desc="********"></my_cell>
-    <my_cell title="性别" :desc="userinfo.gender == 1 ? '男' : '女'"></my_cell>
+    <my_cell
+      @click.native="
+        passshow = !passshow;
+        originpass = newpass = '';
+      "
+      title="密码"
+      desc="********"
+    ></my_cell>
+    <!-- 点击密码，弹出编辑框 -->
+    <van-dialog
+      :beforeClose="beforeClose"
+      @confirm="editPass"
+      v-model="passshow"
+      title="编辑密码"
+      show-cancel-button
+    >
+      <van-field v-model.trim="originpass" required label="原密码" />
+      <van-field v-model.trim="newpass" required label="新密码" />
+    </van-dialog>
+
+    <my_cell
+      @click.native="gendershow = !gendershow"
+      title="性别"
+      :desc="userinfo.gender == 1 ? '男' : '女'"
+    ></my_cell>
+    <!-- 点击性别，弹出 -->
+    <van-action-sheet
+      :close-on-click-action="true"
+      v-model="gendershow"
+      :actions="actions"
+      @select="onSelect"
+    />
   </div>
 </template>
 
@@ -35,7 +65,7 @@
 import my_header from "@/components/my_header";
 import my_cell from "@/components/my_cell";
 import { uploadFile } from "@/apis/fileUpload";
-import { getUserDetail, updateeUserInfo } from "@/apis/user";
+import { getUserDetail, updateUserInfo } from "@/apis/user";
 import axios from "@/utils/request";
 export default {
   components: {
@@ -46,7 +76,12 @@ export default {
     return {
       userinfo: {},
       nickshow: false,
+      passshow: false,
+      gendershow: false,
       nickname: "",
+      originpass: "",
+      newpass: "",
+      actions: [{ name: "男" }, { name: "女" }],
     };
   },
   mounted() {
@@ -74,7 +109,7 @@ export default {
           if (res.data.message == "文件上传成功") {
             this.userinfo.head_img = axios.defaults.baseURL + res.data.data.url;
             // 更新用户数据
-            updateeUserInfo(this.$route.params.id, {
+            updateUserInfo(this.$route.params.id, {
               head_img: res.data.data.url,
             })
               .then((res) => {
@@ -97,7 +132,7 @@ export default {
       this.nickname = this.userinfo.nickname;
     },
     editNickname() {
-      updateeUserInfo(this.$route.params.id, { nickname: this.nickname })
+      updateUserInfo(this.$route.params.id, { nickname: this.nickname })
         .then((res) => {
           if (res.data.message == "修改成功") {
             this.userinfo.nickname = this.nickname;
@@ -110,6 +145,56 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    // 点击确认按钮时触发事件
+    async editPass() {
+      // 如果 原密码正确
+      if (this.originpass == this.userinfo.password) {
+        //  判断 新密码是否合法
+        if (/^.{3,16}$/.test(this.newpass)) {
+          //  进行用户密码修改
+          let res = await updateUserInfo(this.$route.params.id, {
+            password: this.newpass,
+          });
+          // console.log(res);
+          // 刷新页面
+          this.userinfo.password = this.newpass;
+          // 提示
+          this.$toast.success(res.data.message);
+        } else {
+          //  提示 新密码不合法
+          this.$toast.fail("请输入3~16位数的新密码:");
+        }
+      } else {
+        // 否则 提示
+        this.$toast.fail("原密码输入出错！");
+      }
+    },
+    beforeClose(action, done) {
+      if (action == "confirm") {
+        // 如果用户输入原密码不正确或者新密码输入不合法，阻止关闭
+        if (
+          this.originpass != this.userinfo.password ||
+          /^.{3,16}$/.test(this.newpass) == false
+        ) {
+          // 阻止关闭
+          done(false);
+        } else {
+          done();
+        }
+      } else {
+        done();
+      }
+    },
+    // 修改性别
+    async onSelect(item) {
+      // 默认情况下点击选项时不会自动收起
+      // 可以通过 close-on-click-action 属性开启自动收起
+      let gender = item.name == "男" ? 1 : 0;
+      await updateUserInfo(this.$route.params.id, { gender });
+      this.userinfo.gender = gender;
+      // this.show = false;
+      // Toast(item.name);
     },
   },
 };

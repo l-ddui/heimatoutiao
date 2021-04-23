@@ -11,7 +11,12 @@ const router = new VueRouter({
     routes: [
         {
             path: '/',
-            component: () => import('@/views/user/login.vue')
+            redirect: { name: 'index' }
+        },
+        {
+            name: 'index',
+            path: '/index',
+            component: () => import('@/views/index.vue')
         },
         {
             name: 'login',

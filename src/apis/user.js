@@ -31,7 +31,7 @@ export const getUserDetail = (id) => {
 }
 
 // 更新用户信息
-export const updateeUserInfo = (id, data) => {
+export const updateUserInfo = (id, data) => {
     return axios({
         method: 'post',
         url: `/user_update/${id}`,
