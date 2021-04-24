@@ -38,3 +38,18 @@ export const updateUserInfo = (id, data) => {
         data
     })
 }
+
+// 关注用户
+export const followUser = (id) => {
+    return axios({
+        method: 'get',
+        url: `/user_follows/${id}`,
+    })
+}
+// 取消关注用户
+export const unfollowUser = (id) => {
+    return axios({
+        method: 'get',
+        url: `/user_unfollow/${id}`,
+    })
+}
