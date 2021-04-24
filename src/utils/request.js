@@ -23,7 +23,7 @@ axios.interceptors.response.use(function (response) {
     // console.log(response);
     if (response.data.message == '用户信息验证失败！' || response.data.message == '用户信息验证失败') {
         Toast.fail('用户信息验证失败')
-        window.location.href = '#login'
+        window.location.href = '#/login'
     }
     return response;
 }, function (error) {

@@ -27,7 +27,14 @@
        -->
       <video controls v-else :src="post.content"></video>
       <div class="opt">
-        <span class="like"> <van-icon name="good-job-o" />点赞 </span>
+        <span
+          @click="likeArticle"
+          class="like"
+          :class="{ active: post.has_like }"
+          ><van-icon name="good-job-o" />{{
+            post.like_length ? post.like_length : "点赞"
+          }}
+        </span>
         <span class="chat"> <van-icon name="chat" class="w" />微信 </span>
       </div>
     </div>
@@ -47,27 +54,35 @@
       </div>
       <div class="more">更多跟帖</div>
     </div>
+
+    <!-- 底部评论模块 -->
+    <my_commentFooter @click="comments" :post="post"></my_commentFooter>
   </div>
 </template>
 
 <script>
-import { getPostDetail } from "@/apis/post";
+import { getPostDetail, likeThisArticle, starThisArticle } from "@/apis/post";
 import { followUser, unfollowUser } from "@/apis/user";
+import my_commentFooter from "@/components/my_commentFooter";
 export default {
+  components: {
+    my_commentFooter,
+  },
   data() {
     return {
       post: {
         user: {},
       },
+      id: "",
     };
   },
   async mounted() {
     // 获取文章id
-    let id = this.$route.params.id;
+    this.id = this.$route.params.id;
     // console.log(id);
-    let res = await getPostDetail(id);
+    let res = await getPostDetail(this.id);
     this.post = res.data.data;
-    // console.log(this.post);
+    console.log(this.post);
   },
   methods: {
     // 点击关注按钮，如果已登录
@@ -83,14 +98,39 @@ export default {
         res = await followUser(this.post.user.id);
         // console.log(res);
       }
-      this.$toast.success(res.data.message);
       this.post.has_follow = !this.post.has_follow;
+      this.$toast.success(res.data.message);
+    },
+    //  文章点赞
+    async likeArticle() {
+      let res = await likeThisArticle(this.id);
+      // console.log(res);
+      if (res.data.message == "点赞成功") {
+        this.post.like_length++;
+      } else {
+        this.post.like_length--;
+      }
+      this.post.has_like = !this.post.has_like;
+      this.$toast.success(res.data.message);
+    },
+    // 收藏文章
+    async comments() {
+      let res = await starThisArticle(this.id);
+      // console.log(res);
+      if (res.data.message == "收藏成功") {
+      } else {
+      }
+      this.post.has_star = !this.post.has_star;
+      this.$toast.success(res.data.message);
     },
   },
 };
 </script>
 
 <style lang="less" scoped>
+.articaldetail {
+  padding-bottom: 50px;
+}
 .header {
   padding: 0px 10px;
   height: 50px;
@@ -167,6 +207,10 @@ export default {
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 15px;
+  }
+  .active {
+    color: red;
+    border-color: red;
   }
   .w {
     color: rgb(84, 163, 5);
