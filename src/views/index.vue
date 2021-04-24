@@ -16,11 +16,20 @@
     <!-- Tab标签页 -->
     <van-tabs v-model="active" sticky swipeable>
       <van-tab v-for="cate in cateList" :key="cate.id" :title="cate.name">
-        <my_postBlock
-          v-for="post in cate.postlist"
-          :key="post.id"
-          :post="post"
-        ></my_postBlock>
+        <van-list
+          v-model="cate.loading"
+          :finished="cate.finished"
+          finished-text="没有更多了"
+          :offset="5"
+          :immediate-check="false"
+          @load="onLoad"
+        >
+          <my_postBlock
+            v-for="post in cate.postlist"
+            :key="post.id"
+            :post="post"
+          ></my_postBlock>
+        </van-list>
       </van-tab>
     </van-tabs>
   </div>
@@ -46,22 +55,47 @@ export default {
     //   获取、渲染栏目列表
     this.cateList = (await getCateList()).data.data;
     this.cateList = this.cateList.map((v) => {
-      return { ...v, postlist: [], pageIndex: 3, pageSize: 6 };
+      return {
+        ...v,
+        postlist: [], // 存储每个栏目自己的数据
+        pageIndex: 3, // 页码
+        pageSize: 6, //每页显示的数据个数
+        loading: false, //当前组件的上拉状态
+        finished: false, //当前组件的数据是否全部加载完毕
+      };
     });
     // console.log(this.cateList);
     // 通过获取当前激活项的id 获取其数据
     this.getPost();
   },
   methods: {
+    // 上拉加载下一页
+    onLoad() {
+      // 加载下一页的数据，将页码 +1 ，重新发请求
+      this.cateList[this.active].pageIndex++;
+      //  延迟发请求拿数据，近做演示用
+      setTimeout(() => {
+        this.getPost();
+      }, 100);
+    },
     async getPost() {
-      //   let id = this.cateList[this.active].id;
-      this.cateList[this.active].postlist = (
+      // 拿到列表的数据，格式为数组
+      let current = (
         await getPostList({
           category: this.cateList[this.active].id,
           pageIndex: this.cateList[this.active].pageIndex,
           pageSize: this.cateList[this.active].pageSize,
         })
       ).data.data;
+      //   console.log(current);
+      // 将获取到的新闻数据存储到当前栏目的postList数组中
+      this.cateList[this.active].postlist.push(...current);
+      // 本次请求完成之后，将loading重置为false,以便下一次上拉
+      this.cateList[this.active].loading = false;
+      // 判断数据是否已全部加载完毕：我要求6条数据，结果返回的数量小于6，说明真没有数据了
+      if (current.length < this.cateList[this.active].pageSize) {
+        this.cateList[this.active].finished = true;
+      }
     },
   },
   //   监听 active 的变化
