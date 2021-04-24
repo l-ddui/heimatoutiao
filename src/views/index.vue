@@ -29,7 +29,7 @@
 <script>
 import { getCateList } from "@/apis/category";
 import my_postBlock from "@/components/my_postBlock";
-import { getPostList } from "../apis/post";
+import { getPostList } from "@/apis/post";
 export default {
   components: {
     my_postBlock,
@@ -43,37 +43,25 @@ export default {
   },
 
   async mounted() {
-    //   获取栏目数据，存储到数组
-    let res = await getCateList();
-    this.cateList = res.data.data;
-    // console.log(this.cateList);
-    //  数据改造
+    //   获取、渲染栏目列表
+    this.cateList = (await getCateList()).data.data;
     this.cateList = this.cateList.map((v) => {
       return { ...v, postlist: [] };
     });
     // console.log(this.cateList);
-
-    // 获取当前激活项的新闻数据
-    this.getpost();
-    // console.log(this.cateList);
+    // 通过获取当前激活项的id 获取其数据
+    let id = this.cateList[this.active].id;
+    // console.log(id);
+    this.cateList[this.active].postlist = (await getPostList(id)).data.data;
+    // console.log(this.cateList[this.active].postlist);
   },
-  methods: {
-    async getpost() {
-      // 获取当前选中标题项目的 id
-      let id = this.cateList[this.active].id;
-      //   console.log(id);
-      //  获取当前所选项对应的新闻数据存储到其对象的 postlist 数组中
-      this.cateList[this.active].postlist = (await getPostList(id)).data.data;
-      // console.log(this.postList);
-    },
-  },
+  methods: {},
   //   监听 active 的变化
   watch: {
     async active() {
-      // 当所选项的 postlist 有数据时，不再发送请求
       if (this.cateList[this.active].postlist.length == 0) {
-        // 获取当前激活项的新闻数据
-        this.getpost();
+        let id = this.cateList[this.active].id;
+        this.cateList[this.active].postlist = (await getPostList(id)).data.data;
       }
     },
   },
