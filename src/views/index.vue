@@ -46,22 +46,29 @@ export default {
     //   获取、渲染栏目列表
     this.cateList = (await getCateList()).data.data;
     this.cateList = this.cateList.map((v) => {
-      return { ...v, postlist: [] };
+      return { ...v, postlist: [], pageIndex: 3, pageSize: 6 };
     });
     // console.log(this.cateList);
     // 通过获取当前激活项的id 获取其数据
-    let id = this.cateList[this.active].id;
-    // console.log(id);
-    this.cateList[this.active].postlist = (await getPostList(id)).data.data;
-    // console.log(this.cateList[this.active].postlist);
+    this.getPost();
   },
-  methods: {},
+  methods: {
+    async getPost() {
+      //   let id = this.cateList[this.active].id;
+      this.cateList[this.active].postlist = (
+        await getPostList({
+          category: this.cateList[this.active].id,
+          pageIndex: this.cateList[this.active].pageIndex,
+          pageSize: this.cateList[this.active].pageSize,
+        })
+      ).data.data;
+    },
+  },
   //   监听 active 的变化
   watch: {
-    async active() {
+    active() {
       if (this.cateList[this.active].postlist.length == 0) {
-        let id = this.cateList[this.active].id;
-        this.cateList[this.active].postlist = (await getPostList(id)).data.data;
+        this.getPost();
       }
     },
   },
