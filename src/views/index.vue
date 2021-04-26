@@ -9,7 +9,7 @@
         <van-icon name="search" />
         <span>搜索商品</span>
       </div>
-      <div class="user">
+      <div class="user" @click="toIndex">
         <van-icon name="manager-o" />
       </div>
     </div>
@@ -81,6 +81,17 @@ export default {
     this.getPost();
   },
   methods: {
+    // 跳转到首页
+    toIndex() {
+      // 判断是否有id，有则跳转，无则登录
+      let id = localStorage.getItem("heimatoutiao_userid");
+      if (id) {
+        this.$router.push({ path: `personal/${id}` });
+      } else {
+        this.$toast.fail("未登录，请先登录");
+        this.$router.push({ name: `login` });
+      }
+    },
     // 上拉加载下一页
     onLoad() {
       // 加载下一页的数据，将页码 +1 ，重新发请求

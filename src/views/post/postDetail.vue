@@ -3,7 +3,10 @@
     <div class="header">
       <div class="left">
         <van-icon name="arrow-left back" @click="$router.back()" />
-        <span class="iconfont iconnew new"></span>
+        <span
+          @click="$router.push({ name: 'index' })"
+          class="iconfont iconnew new"
+        ></span>
       </div>
       <span :class="{ active: post.has_follow }" @click="follow">{{
         post.has_follow ? "已关注" : "关注"
@@ -55,13 +58,13 @@
       <div class="more">更多跟帖</div>
     </div>
 
-    <!-- 底部评论模块 -->
-    <my_commentFooter @click="comments" :post="post"></my_commentFooter>
+    <!-- 底部评论模块 @click="comments"-->
+    <my_commentFooter :post="post"></my_commentFooter>
   </div>
 </template>
 
 <script>
-import { getPostDetail, likeThisArticle, starThisArticle } from "@/apis/post";
+import { getPostDetail, likeThisArticle } from "@/apis/post";
 import { followUser, unfollowUser } from "@/apis/user";
 import my_commentFooter from "@/components/my_commentFooter";
 export default {
@@ -81,8 +84,8 @@ export default {
     this.id = this.$route.params.id;
     // console.log(id);
     let res = await getPostDetail(this.id);
+    // console.log(this.post);
     this.post = res.data.data;
-    console.log(this.post);
   },
   methods: {
     // 点击关注按钮，如果已登录
@@ -111,16 +114,6 @@ export default {
         this.post.like_length--;
       }
       this.post.has_like = !this.post.has_like;
-      this.$toast.success(res.data.message);
-    },
-    // 收藏文章
-    async comments() {
-      let res = await starThisArticle(this.id);
-      // console.log(res);
-      if (res.data.message == "收藏成功") {
-      } else {
-      }
-      this.post.has_star = !this.post.has_star;
       this.$toast.success(res.data.message);
     },
   },

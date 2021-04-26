@@ -60,8 +60,23 @@ export default {
                   "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3355464299,584008140&fm=26&gp=0.jpg",
               });
               localStorage.setItem("heimatoutiaoToken", res.data.data.token);
-              // 跳转到指定id 的页面
-              this.$router.push({ path: `/personal/${res.data.data.user.id}` });
+              localStorage.setItem(
+                "heimatoutiao_userid",
+                res.data.data.user.id
+              );
+
+              // 跳转处理
+              // 如果之前传递了回跳的路径，那么进行回跳
+              let redirect = location.href.split("=")[1];
+              // console.log(location.href);
+              if (redirect) {
+                location.href = decodeURIComponent(redirect);
+              } else {
+                // 否则跳转到个人中心页// 跳转到个人中心页
+                this.$router.push({
+                  path: `/personal/${res.data.data.user.id}`,
+                });
+              }
             } else {
               this.$toast.fail({
                 message: res.data.message,

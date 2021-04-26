@@ -2,7 +2,14 @@
   <div class="comment">
     <div class="addcomment" v-show="!isFocus">
       <input @click="isFocus = !isFocus" type="text" placeholder="写跟帖" />
-      <span class="comment">
+      <span
+        class="comment"
+        @click="
+          $router.push({
+            name: 'comment',
+          })
+        "
+      >
         <i class="iconfont iconpinglun-"></i>
         <em>{{ post.comment_length }}</em>
       </span>
@@ -14,31 +21,79 @@
       <i class="iconfont iconfenxiang"></i>
     </div>
     <div class="inputcomment" v-show="isFocus">
-      <textarea ref="commtext" rows="5"></textarea>
+      <textarea v-model.trim="content" ref="commtext" rows="5"></textarea>
       <div>
-        <span>发 送</span>
-        <span @click="isFocus = !isFocus">取 消</span>
+        <span @click="postComment">发 送</span>
+        <span @click="cancelReplay">取 消</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { starThisArticle, postComment } from "@/apis/post";
 export default {
   props: {
     post: {
       type: Object,
       required: true,
     },
+    commentObj: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
       isFocus: false,
+      content: "",
     };
   },
+  watch: {
+    // 如果有评论对象(不为null)，说明用户单击了回复，且传递了评论对象
+    commentObj() {
+      // console.log("子组件中的", this.commentObj);
+      if (this.commentObj) {
+        this.isFocus = true;
+      }
+    },
+  },
   methods: {
-    shoucang(e) {
-      this.$emit("click", e);
+    async shoucang() {
+      // 收藏文章
+      let res = await starThisArticle(this.post.id);
+      this.post.has_star = !this.post.has_star;
+      this.$toast.success(res.data.message);
+    },
+    // 发表评论
+    async postComment() {
+      if (this.content.length == 0) {
+        this.$toast.fail("请输入评论内容");
+        return;
+      }
+      // 1.准备参数
+      let data = {
+        content: this.content,
+      };
+      // 判断是否传入对象
+      if (this.commentObj) {
+        data.parent_id = this.commentObj.id;
+      }
+      let res = await postComment(this.post.id, data);
+      // console.log(res);
+      // 4.页面内容的刷新-子组件要告诉父组件进行列表数据的刷新
+      this.$emit("refresh");
+      // 2.隐藏输入框
+      this.isFocus = false;
+      // 1.给提示
+      this.$toast.success("发表评论成功");
+      // 3.清空之前输入的内容
+      this.content = "";
+    },
+    // 取消评论
+    cancelReplay() {
+      this.isFocus = !this.isFocus;
+      this.$emit("cancel");
     },
   },
 };
