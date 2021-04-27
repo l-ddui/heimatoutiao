@@ -5,9 +5,9 @@
       <div class="logo">
         <span class="iconfont iconnew"></span>
       </div>
-      <div class="search">
+      <div class="search" @click="$router.push({ name: 'search' })">
         <van-icon name="search" />
-        <span>搜索商品</span>
+        <span>头条搜索</span>
       </div>
       <div class="user" @click="toIndex">
         <van-icon name="manager-o" />
@@ -63,8 +63,30 @@ export default {
   },
 
   async mounted() {
-    //   获取、渲染栏目列表
-    this.cateList = (await getCateList()).data.data;
+    // 实现栏目管理的入口 添加
+    // 细节：要使得箭头函数，否则this的指向变了
+    document.querySelector(".van-sticky").onclick = (e) => {
+      if (e.target.className == "van-sticky") {
+        //不加 catch 时会报错， 将错误传到catch里面去
+        this.$router.push({ name: "cateManager" }).catch(() => {});
+      }
+    };
+    // 先从本地取数据
+    this.cateList = JSON.parse(localStorage.getItem("cateList"));
+    if (!this.cateList) {
+      //   获取、渲染栏目列表
+      this.cateList = (await getCateList()).data.data;
+    } else {
+      if (localStorage.getItem("heimatoutiaoToken")) {
+        this.cateList.unshift(
+          { id: 0, name: "关注", is_top: 1 },
+          { id: 999, name: "头条", is_top: 1 }
+        );
+      } else {
+        this.cateList.unshift({ id: 999, name: "头条", is_top: 1 });
+      }
+    }
+    // console.log(this.cateList);
     this.cateList = this.cateList.map((v) => {
       return {
         ...v,
@@ -148,6 +170,21 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/.van-sticky {
+  padding-right: 44px;
+  &::before {
+    background-color: #fff;
+    content: "⊕";
+    width: 45px;
+    text-align: center;
+    height: 44px;
+    position: absolute;
+    font-size: 28px;
+    line-height: 32px;
+    top: 0;
+    right: 0;
+  }
+}
 .index {
   .header {
     display: flex;

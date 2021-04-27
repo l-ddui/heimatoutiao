@@ -44,3 +44,9 @@ export const postComment = (id, data) => {
         data
     })
 }
+// 搜索文章
+export const searchPost = (keyword) => {
+    return axios({
+        url: `/post_search?keyword=` + keyword,
+    })
+}

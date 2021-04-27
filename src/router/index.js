@@ -58,12 +58,24 @@ const router = new VueRouter({
             path: '/comment/:id',
             component: () => import('@/views/comment.vue')
         },
+        {
+            name: 'cateManager',
+            path: '/cateManager',
+            component: () => import('@/views/cateManager.vue')
+        },
+        {
+            name: 'search',
+            path: '/search',
+            component: () => import('@/views/search.vue')
+        },
     ]
 })
 
 // 导航守卫
 router.beforeEach((to, from, next) => {
-    if (to.path.indexOf('/personal/') != -1) {
+    //
+    let arr = ['personal', 'edit_profile', 'cateManager']
+    if (arr.indexOf(to.name) != -1) {
         let token = localStorage.getItem('heimatoutiaoToken')
         if (token) {
             next()
@@ -72,6 +84,7 @@ router.beforeEach((to, from, next) => {
                 message: '未登录，请先登录',
                 icon: "warning-o",
             });
+            // console.log(from);
             next({ name: 'login' })
         }
     }

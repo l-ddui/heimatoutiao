@@ -8,7 +8,7 @@ import '@/styles/reset.less'
 import router from '@/router/index'
 
 // 引入 toast
-import { Toast, Icon, Uploader, Dialog, Field, ActionSheet, Tab, Tabs, List, PullRefresh } from 'vant';
+import { Toast, Icon, Uploader, Dialog, Field, ActionSheet, Tab, Tabs, List, PullRefresh, Search } from 'vant';
 Vue.use(Toast)
   .use(Icon)
   .use(Dialog)
@@ -19,6 +19,7 @@ Vue.use(Toast)
   .use(List)
   .use(Uploader)
   .use(PullRefresh)
+  .use(Search)
 
 Vue.config.productionTip = false
 
