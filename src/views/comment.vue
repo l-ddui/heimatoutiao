@@ -16,10 +16,16 @@
         </div>
         <span @click="replayComment(value)">回复</span>
       </div>
-      <comment_item v-if="value.parent" :parent="value.parent"></comment_item>
+      <!-- @replay="replayComment" 子传父调用 replayComment 方法，此时方法的参数为子传父时传递的数据  -->
+      <comment_item
+        @replay="replayComment"
+        v-if="value.parent"
+        :parent="value.parent"
+      ></comment_item>
       <div class="text">{{ value.content }}</div>
     </div>
     <!-- 发表评论 -->
+
     <my_commentFooter
       @cancel="temp = null"
       :commentObj="temp"
@@ -67,9 +73,9 @@ export default {
       this.commentList = res.data.data;
     },
     // 回复评论
-    replayComment(v) {
-      this.temp = v;
-      console.log("v:", v);
+    replayComment(value) {
+      this.temp = value;
+      // console.log("value:", value);
     },
     refresh() {
       this.init();

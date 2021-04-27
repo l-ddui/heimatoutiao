@@ -84,8 +84,9 @@ export default {
     this.id = this.$route.params.id;
     // console.log(id);
     let res = await getPostDetail(this.id);
-    // console.log(this.post);
+    // console.log(res);
     this.post = res.data.data;
+    // console.log(res.data.data);
   },
   methods: {
     // 点击关注按钮，如果已登录

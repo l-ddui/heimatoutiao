@@ -1,12 +1,18 @@
 <template>
   <div class="commentItem">
-    <commentItem v-if="parent.parent" :parent="parent.parent"></commentItem>
+    <!-- 递归生成 -->
+    <commentItem
+      v-if="parent.parent"
+      :parent="parent.parent"
+      @replay="handlerReplay"
+    ></commentItem>
+
     <div class="top">
       <div class="left">
         <span>{{ parent.user.nickname }}</span> &nbsp;&nbsp;&nbsp;
         <span>2分钟前</span>
       </div>
-      <span>回复</span>
+      <span @click="handlerReplay(parent)">回复</span>
     </div>
     <div class="bottom">{{ parent.content }}</div>
   </div>
@@ -18,6 +24,14 @@ export default {
   props: {
     parent: {
       type: Object,
+    },
+  },
+  methods: {
+    /*  
+    comment_item 为子组件，评论模块为子组件（已实现), 实现嵌套回复，点击 comment_item  中的回复时弹出评论模块，可以先使子传父，（comment_item  传到 commment），再实现父传子调用评论模块（commment 传到 commentFooter）
+    */
+    handlerReplay(value) {
+      this.$emit("replay", value);
     },
   },
 };
